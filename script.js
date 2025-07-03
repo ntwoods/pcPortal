@@ -47,20 +47,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- CRM Section Collapse/Expand Functionality ---
 function setupCrmToggle() {
-    // Delegate event listener to the parent container
+    // Delegate event listener to the main crm-sections container
+    // This will catch clicks on any '.section-header' within dynamically created CRM sections
     crmSectionsContainer.addEventListener('click', (event) => {
-        const header = event.target.closest('.crm-section .section-header');
+        const header = event.target.closest('.crm-section-item .section-header');
         if (header) {
-            const section = header.parentElement;
+            const section = header.parentElement; // The .crm-section-item div
             if (section) {
                 section.classList.toggle('collapsed');
             }
         }
     });
+
+    // Initial collapse for all CRM sections on load
+    // This will be called after sections are populated by refreshAllCounts
+    // and ensures all newly created sections start collapsed.
+    const crmSectionItems = document.querySelectorAll('.crm-section-item');
+    crmSectionItems.forEach(item => {
+        item.classList.add('collapsed');
+    });
 }
 
 
-// --- Tile Creation and Data Fetching ---
+// --- Card Creation and Data Fetching ---
 // Function to create and append a card tile
 function createAndAppendCard(container, cardInfo, crmName = null) {
   const card = document.createElement("div");
@@ -75,11 +84,7 @@ function createAndAppendCard(container, cardInfo, crmName = null) {
     hrefUrl += `?crm=${crmParam}&mode=view`;
     // Add CRM param to API call
     apiUrl += `?crm=${crmParam}`;
-  } else {
-    // If it's not a CRM-specific card, just add ?mode=view
-    hrefUrl += `?mode=view`;
   }
-
 
   // Set onclick to navigate, mimicking the dashboard (1).html approach
   card.onclick = () => {
@@ -113,13 +118,17 @@ function createAndAppendCard(container, cardInfo, crmName = null) {
     })
     .then(data => {
       let pendingCount = 0;
+      // Adjust data parsing based on the typical structure from your Google Apps Script
       if (data.success && typeof data.count === 'number') {
         pendingCount = data.count;
       } else if (Array.isArray(data.data)) {
         pendingCount = data.data.length;
       } else if (data.stats && typeof data.stats.pendingOrders === 'number') {
         pendingCount = data.stats.pendingOrders;
+      } else if (typeof data.pendingOrders === 'number') { // Added for flexibility
+        pendingCount = data.pendingOrders;
       }
+
 
       if (cardCount) {
         cardCount.textContent = pendingCount > 0 ? `${pendingCount}` : '✓';
@@ -129,20 +138,27 @@ function createAndAppendCard(container, cardInfo, crmName = null) {
         card.classList.remove('loading'); // Remove loading state
         if (pendingCount > 0) {
           card.classList.add('has-pending');
+          card.classList.remove('all-clear-crm'); // Ensure no all-clear if it becomes pending
         } else {
           card.classList.remove('has-pending');
-          // No 'all-clear' class for green background as per request
+          // If it's a CRM card and not pending, add all-clear-crm class for green state
+          if (crmName) { // Check if it's a CRM-specific card
+              card.classList.add('all-clear-crm');
+          } else {
+              card.classList.remove('all-clear-crm'); // Global tiles revert to default white/blue
+          }
         }
       }
     })
     .catch(err => {
       console.error(`Error fetching data for ${cardInfo.text} (${crmName || 'Global'}):`, err);
       if (cardCount) {
-        cardCount.textContent = '-';
+        cardCount.textContent = '-'; // Indicate error
       }
       if (card) {
         card.classList.remove('loading'); // Remove loading state
         card.classList.remove('has-pending'); // Ensure no highlighting on error
+        card.classList.remove('all-clear-crm'); // Ensure no specific color on error
       }
     });
 }
@@ -161,12 +177,16 @@ function refreshAllCounts() {
     // Populate CRM Sections
     crmList.forEach(crm => {
         const crmSectionDiv = document.createElement("div");
-        crmSectionDiv.className = "crm-section-item section"; // Apply section class too
-        crmSectionDiv.id = `crm-section-${crm.replace(/\s/g, '')}`; // Unique ID for toggle
+        // Apply crm-section-item for individual CRM container and 'section' for general styling
+        crmSectionDiv.className = "crm-section-item section"; 
+        // Add "collapsed" class initially to make them collapsed by default
+        crmSectionDiv.classList.add('collapsed');
+        // Unique ID for toggle, remove spaces for valid ID
+        crmSectionDiv.id = `crm-section-${crm.replace(/\s/g, '')}`; 
 
         const sectionHeader = document.createElement("div");
         sectionHeader.className = "section-header";
-        // Do not add toggle-icon here; it's added by CSS ::after if collapsed is applied
+        
         const sectionTitle = document.createElement("h3");
         sectionTitle.className = "section-title";
         sectionTitle.textContent = crm;
@@ -178,14 +198,13 @@ function refreshAllCounts() {
         toggleIcon.textContent = "▼"; // Down arrow
         sectionHeader.appendChild(toggleIcon);
 
-
         crmSectionDiv.appendChild(sectionHeader);
 
         const cardGridContainer = document.createElement("div");
-        cardGridContainer.className = "card-grid-container"; // For collapse/expand animation
+        cardGridContainer.className = "card-grid-container"; // Wrapper for collapse/expand animation
 
         const crmTileGrid = document.createElement("div");
-        crmTileGrid.className = "crm-grid"; // Use crm-grid for CRM tiles
+        crmTileGrid.className = "crm-grid"; // Use crm-grid for CRM tiles, this will be the flex (horizontal) container
 
         crmLevels.forEach(levelData => {
             createAndAppendCard(crmTileGrid, levelData, crm);
@@ -195,14 +214,16 @@ function refreshAllCounts() {
         crmSectionDiv.appendChild(cardGridContainer);
         crmSectionsContainer.appendChild(crmSectionDiv);
     });
+    
+    // Set up toggle logic and initial collapse state after all sections are created
+    setupCrmToggle();
 }
 
 
 // --- Initial Load and Periodic Refresh ---
 document.addEventListener('DOMContentLoaded', () => {
   refreshAllCounts(); // Initial load of all data
-  setupCrmToggle(); // Set up toggle listeners
+  
+  // Auto refresh every 30 seconds
+  setInterval(refreshAllCounts, 30000);
 });
-
-// Auto refresh every 30 seconds
-setInterval(refreshAllCounts, 30000);
