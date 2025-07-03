@@ -6,7 +6,7 @@ const levels = [
   { text: "Reminder to Dispatch Team", url: "https://script.google.com/macros/s/AKfycbxMxIzOQmHv3LPTh6ca6i5uuguyH615cnjA5emEGNT0rmWpJlnrcg-KWNVP1DORkkcX/exec" },
   { text: "Share Dispatch Details with Dealer", url: "https://script.google.com/macros/s/AKfycbwUr0UhENK6RGtdvYMC6-V0Khwb3kibKP4SLXC4nzL6Hm4idr6P-Olx4XTWvgZ_e2xk-Q/exec" }
 ];
-const baseUrl = "https://ntwoods.github.io/ordertodispatch";
+const baseUrl = "https://ntwoods.github.io/ordertodispatch"; // Base URL for tile hrefs
 
 const container = document.getElementById("crm-sections");
 
@@ -22,41 +22,78 @@ crmList.forEach(crm => {
   const tileGrid = document.createElement("div");
   tileGrid.className = "tile-grid";
 
-  levels.forEach(level => {
+  levels.forEach((levelData, index) => {
     const tile = document.createElement("a");
     tile.className = "tile";
     const crmParam = encodeURIComponent(crm);
-    // The L{level} in href is no longer directly tied to the level number,
-    // so we can use a more descriptive parameter if needed, or keep it
-    // generic if the target pages still follow L1.html, L2.html etc.
-    // For this example, assuming the base URL structure for links remains L1.html, etc.
-    const levelNumber = levels.indexOf(level) + 1; // Get the original level number (1-5) for the href
+    
+    // Determine the level number for the href (L1.html, L2.html, etc.)
+    const levelNumber = index + 1; 
     tile.href = `${baseUrl}/L${levelNumber}.html?crm=${crmParam}&mode=view`;
-    tile.textContent = level.text; // Use the new descriptive text
+    tile.textContent = levelData.text; // Use the new descriptive text for the card
 
     const count = document.createElement("div");
     count.className = "tile-count";
-    count.textContent = "..."; // placeholder
+    count.textContent = "..."; // Placeholder while fetching
     tile.appendChild(count);
 
     tileGrid.appendChild(tile);
 
-    // Fetch pending count from API
-    fetch(`${level.url}?action=getStatsFiltered&crm=${crmParam}`)
-      .then(res => res.json())
+    // Fetch pending count from the specific API for this level and CRM
+    const apiUrl = `${levelData.url}?crm=${crmParam}`;
+
+    fetch(apiUrl)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
-        if (data.status === "success" && data.stats?.pendingOrders != null) {
-          count.textContent = data.stats.pendingOrders;
-        } else {
-          count.textContent = "0";
+        let pendingCount = 0;
+        // Logic to extract count based on different API response structures
+        if (data.success && typeof data.count === 'number') {
+          pendingCount = data.count;
+        } else if (Array.isArray(data.data)) {
+          pendingCount = data.data.length;
+        } else if (data.stats && typeof data.stats.pendingOrders === 'number') {
+          pendingCount = data.stats.pendingOrders;
+        }
+
+        if (count) {
+          count.textContent = pendingCount > 0 ? `${pendingCount}` : '✓'; // Display count or a checkmark
+        }
+
+        // Apply classes for styling based on pending count
+        if (tile) {
+          if (pendingCount > 0) {
+            tile.classList.add('has-pending');
+            tile.classList.remove('all-clear');
+          } else {
+            tile.classList.remove('has-pending');
+            tile.classList.add('all-clear');
+          }
         }
       })
       .catch(err => {
-        console.error("Error loading count:", err);
-        count.textContent = "-";
+        console.error(`Error fetching data for ${crm} - ${levelData.text}:`, err);
+        if (count) {
+          count.textContent = '-'; // Indicate error
+        }
+        // Remove pending/all-clear classes on error
+        if (tile) {
+          tile.classList.remove('has-pending');
+          tile.classList.remove('all-clear');
+        }
       });
   });
 
   section.appendChild(tileGrid);
   container.appendChild(section);
 });
+
+// Optional: Add the DOMContentLoaded listener and setInterval for periodic refresh
+// (as seen in Sonakshi Jain PC14691995 (1).html for full functionality,
+// but the above loop already fetches data on load for each tile.)
+// If you want a full periodic refresh of *all* counts, you'd wrap the crmList.forEach
+// in a function and call it periodically. For now, each tile fetches its own data once.
