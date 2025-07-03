@@ -1,175 +1,412 @@
+/* Using CSS variables for a robust theming system based on dashboard (1).html */
+:root {
+    /* Light Mode Palette (White & Blues) */
+    --bg-light: #f4f7f6; /* Off-white / very light grey */
+    --card-light: #ffffff; /* Pure white for cards */
+    --text-light: #2c3e50; /* Dark blue-grey for main text */
+    --sidebar-bg-light: #e0f2f7; /* Light blue for sidebar */
+    --sidebar-text-light: #2c3e50;
+    --sidebar-hover-light: #c1e4f0; /* Slightly darker blue on hover */
+    --header-bg-light: rgba(255, 255, 255, 0.9); /* Semi-transparent white header */
+
+    /* Dark Mode Palette (Blues & Dark Greys) */
+    --bg-dark: #1e2b3c; /* Dark blue-grey */
+    --card-dark: #2a3d52; /* Slightly lighter dark blue-grey for cards */
+    --text-dark: #e0e6eb; /* Light grey-blue for text */
+    --sidebar-bg-dark: #121c27; /* Very dark blue for sidebar */
+    --sidebar-text-dark: #e0e6eb;
+    --sidebar-hover-dark: #2a3d52;
+    --header-bg-dark: rgba(23, 33, 46, 0.9);
+
+    /* Accent Blues - Different shades for vibrancy */
+    --blue-primary: #007bff; /* Standard blue */
+    --blue-secondary: #6c757d; /* Grey-blue */
+    --blue-accent: #3498db; /* Vivid blue */
+
+    /* Status Colors */
+    --red-light: #e74c3c; /* Light red for errors/warnings */
+    --red-dark: #e74c3c; /* Dark red for errors/warnings */
+    /* Only red highlighting, so no green variables are needed for "all clear" backgrounds */
+    --black-dark: #2c3e50; /* Used for normal cards in dark theme */
+
+    /* General */
+    --border-color: #e0e6eb; /* Light border */
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
+}
+
+/* Base styles for light mode */
 body {
-  font-family: sans-serif;
-  background-color: #e3f2fd; /* Light blue background */
-  margin: 0;
-  padding: 1.5rem;
-  display: flex;
-  justify-content: center; /* Center the dashboard container */
-  align-items: flex-start; /* Align content to the top */
-  min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-light);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
-.dashboard-container {
-  max-width: 1200px; /* Adjust max width as needed for dashboard layout */
-  width: 100%;
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 2rem; /* Gap between major sections */
+/* Dark mode styles */
+body[data-theme='dark'] {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
 }
 
-.dashboard-title {
-  font-size: 2.2rem; /* Larger, prominent title */
-  font-weight: bold;
-  margin-bottom: 0.5rem; /* Reduced bottom margin as sections follow */
-  text-align: center;
-  color: #1565c0;
+/* Header Styles */
+.header {
+    background: var(--header-bg-light);
+    backdrop-filter: blur(5px);
+    padding: 1rem 2rem;
+    box-shadow: var(--box-shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+
+body[data-theme='dark'] .header {
+    background: var(--header-bg-dark);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--blue-accent);
+}
+
+.theme-toggle {
+    background-color: var(--blue-primary);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color var(--transition-speed), transform 0.1s ease-in-out;
+}
+
+.theme-toggle:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+body[data-theme='dark'] .theme-toggle {
+    background-color: var(--blue-primary);
+}
+
+/* Main Wrapper and Content Area */
+.main-wrapper {
+    display: flex;
+    flex-grow: 1;
+}
+
+.sidebar {
+    width: 200px; /* Adjust as needed, can be hidden if not used */
+    background-color: var(--sidebar-bg-light);
+    padding: 2rem 1rem;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    transition: background-color var(--transition-speed);
+}
+
+body[data-theme='dark'] .sidebar {
+    background-color: var(--sidebar-bg-dark);
+}
+
+.content-area {
+    flex-grow: 1;
+    padding: 2rem;
+    max-width: 1000px; /* Control max width of content area */
+    margin: 0 auto; /* Center content area */
+}
+
+/* Section Styles (for dashboard-section, crm-section etc.) */
+.section {
+    background-color: var(--card-light);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+
+body[data-theme='dark'] .section {
+    background-color: var(--card-dark);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer; /* To indicate it's clickable for collapse/expand */
+    transition: border-color var(--transition-speed);
+}
+
+body[data-theme='dark'] .section-header {
+    border-bottom-color: rgba(255, 255, 255, 0.12);
 }
 
 .section-title {
-    font-size: 1.5rem; /* Title for sub-sections like "CRM Progress" */
+    font-size: 1.4rem;
     font-weight: 600;
-    color: #0d47a1;
-    margin-bottom: 1rem;
-    text-align: center; /* Centered section titles */
-    border-bottom: 2px solid #e0f2f7;
-    padding-bottom: 0.5rem;
+    color: var(--text-light); /* Will adapt to dark mode via body's color */
+    margin: 0;
 }
 
-/* Global Tiles Section (the top 3 tiles) */
-.global-tiles-section {
-    background: #f0f8ff; /* Slightly different background for distinction */
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    border: 1px solid #bbdefb;
-    text-align: center; /* Center the grid within its section */
+body[data-theme='dark'] .section-title {
+    color: var(--text-dark);
 }
 
-/* Styling for both global and CRM tile grids */
-.tile-grid {
-  display: grid;
-  /* Adjust minmax based on desired number of columns for global tiles
-     and overall compactness for CRM tiles */
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
-  gap: 0.8rem; /* Consistent gap between tiles */
-  justify-content: center; /* Center tiles horizontally in their grid */
+.toggle-icon {
+    font-size: 1.3rem;
+    transition: transform var(--transition-speed) ease-in-out;
 }
 
-/* Specific adjustments for the global tiles grid, if needed to match image */
-.global-tiles-section .tile-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Potentially larger for global tiles */
-    max-width: 800px; /* Control width of the global tile group */
-    margin: 0 auto; /* Center the global tile group */
+.section.collapsed .toggle-icon {
+    transform: rotate(-90deg); /* Rotate icon when collapsed */
+}
+
+.section.collapsed .card-grid-container {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+}
+
+.card-grid-container {
+    max-height: 1000px; /* Arbitrary large value for expanded state */
+    opacity: 1;
+    transition: max-height 0.7s ease-in-out, opacity 0.7s ease-in-out;
 }
 
 
-/* CRM Summary Section */
-.crm-summary-section {
-    background: #ffffff; /* White background for the CRM section block */
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    border: 1px solid #bbdefb;
+/* Grid for Cards */
+.dashboard-grid, .crm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Default for responsive cards */
+    gap: 1rem; /* Gap between cards */
 }
 
-.crm-sections {
-  display: grid; /* Use grid for CRM sections to lay them out in columns */
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2 or 3 CRM sections per row */
-  gap: 1.5rem; /* Gap between individual CRM blocks */
+/* Specific grid adjustment for global tiles */
+.dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Slightly larger cards for global section */
 }
 
-.crm-section {
-  background: #fdfdfe; /* Very light blue background for individual CRM block */
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-  border: 1px solid #cfe9ff; /* Lighter border for individual CRM blocks */
-  display: flex;
-  flex-direction: column;
+/* Individual Card Styling */
+.card {
+    background-color: var(--card-light);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color var(--transition-speed);
+    position: relative; /* For the count bubble */
+    min-height: 80px; /* Ensure a consistent height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.crm-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.8rem;
-  color: #2196f3;
-  border-bottom: 1px solid #e0f2f7;
-  padding-bottom: 0.4rem;
-  text-align: center; /* Center CRM name */
+body[data-theme='dark'] .card {
+    background-color: var(--card-dark);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Individual Tile Styling (applies to both global and CRM tiles) */
-.tile {
-  background-color: #e1f5fe; /* Lightest blue for tiles (default) */
-  border-radius: 6px;
-  padding: 0.5rem; /* Significantly reduced padding for tiny tiles */
-  text-align: center;
-  font-weight: 500;
-  transition: background 0.2s, transform 0.2s;
-  position: relative;
-  color: #0d47a1; /* Dark blue text for tiles */
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 55px; /* Adjust min-height for tiny tiles */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  font-size: 0.8rem; /* Further reduced font size for tile text */
-  line-height: 1.2; /* Adjust line height for multi-line short texts */
-  flex-grow: 1; /* Allow tiles to grow within their grid cell */
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
-.tile:hover {
-  background-color: #bbdefb;
-  transform: translateY(-2px);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+/* Loading state for cards */
+.card.loading {
+    opacity: 0.7;
+    cursor: wait;
 }
 
-.tile-count {
-  position: absolute;
-  top: 4px; /* Adjusted top position for tiny tiles */
-  right: 6px; /* Adjusted right position for tiny tiles */
-  background: #ef4444; /* Default red for count */
-  color: white;
-  padding: 1px 4px; /* Reduced padding for smaller count bubble */
-  border-radius: 8px;
-  font-size: 0.7rem; /* Reduced font size for count */
-  min-width: 16px;
-  text-align: center;
-  font-weight: bold;
+/* Card content */
+.card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--blue-accent);
+    transition: color var(--transition-speed);
+}
+body[data-theme='dark'] .card-icon {
+    color: var(--blue-accent);
 }
 
-/* Styles for Pending State (only red highlighting) */
-.tile.has-pending {
-  background-color: #ef5350; /* A vibrant red */
-  color: #ffffff; /* White text for contrast */
-  box-shadow: 0 4px 10px rgba(239, 83, 80, 0.4); /* Red shadow */
+.card-title {
+    font-size: 0.95rem; /* Reduced for compactness */
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: var(--text-light);
+    line-height: 1.3;
+    transition: color var(--transition-speed);
+}
+body[data-theme='dark'] .card-title {
+    color: var(--text-dark);
+}
+
+
+.card-count {
+    background-color: #ef4444; /* Default red for count, will be overridden by has-pending for card */
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    min-width: 25px;
+    text-align: center;
+}
+
+/* Highlight for Pending Cards (Red Only) */
+.card.has-pending {
+  background-color: var(--red-light); /* Vibrant red */
+  color: white; /* White text for contrast */
+  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4); /* Red shadow */
   animation: pulse-red 2s infinite; /* Add pulse animation */
 }
 
-/* Style for the count within a pending tile */
-.tile.has-pending .tile-count {
-  background-color: #c62828; /* Darker red for the count bubble */
-  color: #ffffff;
+/* Text color for pending cards */
+.card.has-pending .card-title,
+.card.has-pending .card-icon {
+  color: white;
 }
+
+/* Style for the count within a pending card */
+.card.has-pending .card-count {
+  background-color: #c0392b; /* Darker red for the count bubble */
+  color: white;
+}
+
+/* No .card.all-clear styles as per request. Cards with 0 count revert to default. */
+
 
 /* Keyframe animation for the pulse effect */
 @keyframes pulse-red {
   0% {
     transform: scale(1);
-    box-shadow: 0 4px 10px rgba(239, 83, 80, 0.4);
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
   }
   50% {
     transform: scale(1.01);
-    box-shadow: 0 6px 15px rgba(239, 83, 80, 0.5);
+    box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 4px 10px rgba(239, 83, 80, 0.4);
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
   }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .header {
+        padding: 0.8rem 1rem;
+    }
+    .logo {
+        font-size: 1.5rem;
+    }
+    .theme-toggle {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    .content-area {
+        padding: 1.5rem;
+    }
+    .section {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .section-title {
+        font-size: 1.2rem;
+    }
+    .dashboard-grid, .crm-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.8rem;
+    }
+    .global-tiles-section .dashboard-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    .card {
+        padding: 0.8rem;
+        min-height: 70px;
+    }
+    .card-icon {
+        font-size: 1.2rem;
+    }
+    .card-title {
+        font-size: 0.85rem;
+    }
+    .card-count {
+        font-size: 0.8rem;
+        padding: 2px 6px;
+        top: 6px;
+        right: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-area {
+        padding: 1rem;
+    }
+    .dashboard-grid, .crm-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 0.5rem;
+    }
+    .global-tiles-section .dashboard-grid {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+    .card {
+        padding: 0.6rem;
+        min-height: 60px;
+    }
+    .card-title {
+        font-size: 0.75rem;
+    }
+    .card-count {
+        font-size: 0.7rem;
+        padding: 1px 4px;
+        top: 4px;
+        right: 4px;
+        min-width: 18px;
+    }
+    .header {
+      padding: 0.6rem 0.8rem;
+    }
+    .logo {
+      font-size: 1.3rem;
+    }
+    .theme-toggle {
+      font-size: 0.8rem;
+      padding: 0.4rem 0.8rem;
+    }
+    .section-title {
+      font-size: 1.1rem;
+    }
 }
