@@ -75,7 +75,11 @@ function createAndAppendCard(container, cardInfo, crmName = null) {
     hrefUrl += `?crm=${crmParam}&mode=view`;
     // Add CRM param to API call
     apiUrl += `?crm=${crmParam}`;
+  } else {
+    // If it's not a CRM-specific card, just add ?mode=view
+    hrefUrl += `?mode=view`;
   }
+
 
   // Set onclick to navigate, mimicking the dashboard (1).html approach
   card.onclick = () => {
