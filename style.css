@@ -23,11 +23,29 @@
     --blue-secondary: #6c757d; /* Grey-blue */
     --blue-accent: #3498db; /* Vivid blue */
 
-    /* Status Colors */
+    /* Status Colors (for global tiles) */
     --red-light: #e74c3c; /* Light red for errors/warnings */
     --red-dark: #e74c3c; /* Dark red for errors/warnings */
-    /* Only red highlighting, so no green variables are needed for "all clear" backgrounds */
-    --black-dark: #2c3e50; /* Used for normal cards in dark theme */
+
+    /* CRM Specific Yellow/Green Palette (Light Mode) */
+    --crm-bg-default-light: #fff3cd; /* Light yellow */
+    --crm-bg-pending-light: #ffc107; /* Darker yellow/orange */
+    --crm-bg-all-clear-light: #28a745; /* Green */
+    --crm-text-default-light: #664d03; /* Dark text for yellow */
+    --crm-text-all-clear-light: #ffffff; /* White text for green */
+
+    /* CRM Specific Yellow/Green Palette (Dark Mode) */
+    --crm-bg-default-dark: #3a321d; /* Darker yellow/brown */
+    --crm-bg-pending-dark: #916c0b; /* Saturated dark yellow/orange */
+    --crm-bg-all-clear-dark: #198754; /* Darker green */
+    --crm-text-default-dark: #f0e6c2; /* Light text for dark yellow */
+    --crm-text-all-clear-dark: #ffffff; /* White text for dark green */
+
+    /* CRM Count colors */
+    --crm-count-default-bg: #ff9800; /* Orange for count on default yellow */
+    --crm-count-pending-bg: #dc3545; /* Red for count on pending yellow */
+    --crm-count-all-clear-bg: #0d6efd; /* Blue for count on green */
+
 
     /* General */
     --border-color: #e0e6eb; /* Light border */
@@ -119,6 +137,8 @@ body[data-theme='dark'] .theme-toggle {
     padding: 2rem 1rem;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
     transition: background-color var(--transition-speed);
+    /* Initially hide sidebar on small screens if not needed, or make it toggleable */
+    /* display: none; */
 }
 
 body[data-theme='dark'] .sidebar {
@@ -187,29 +207,96 @@ body[data-theme='dark'] .section-title {
     max-height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+    padding-top: 0; /* Adjust padding if necessary to truly hide */
+    padding-bottom: 0;
+    margin-bottom: 0;
+    transition: max-height 0.5s ease-out, opacity 0.5s ease-out, padding 0.5s ease-out, margin 0.5s ease-out;
 }
 
 .card-grid-container {
     max-height: 1000px; /* Arbitrary large value for expanded state */
     opacity: 1;
-    transition: max-height 0.7s ease-in-out, opacity 0.7s ease-in-out;
+    padding-top: 0.5rem; /* Small internal padding */
+    padding-bottom: 0.5rem;
+    transition: max-height 0.7s ease-in-out, opacity 0.7s ease-in-out, padding 0.7s ease-in-out, margin 0.7s ease-in-out;
 }
 
 
-/* Grid for Cards */
-.dashboard-grid, .crm-grid {
+/* Grid for Cards - applies to global tiles */
+.dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Default for responsive cards */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Slightly larger cards for global section */
     gap: 1rem; /* Gap between cards */
 }
 
-/* Specific grid adjustment for global tiles */
-.dashboard-grid {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Slightly larger cards for global section */
+/* Outer grid for CRM sections (each CRM is a 'section') */
+.crm-grid-main { /* Renamed from .crm-grid to differentiate */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Each CRM section takes up its own column */
+    gap: 1.5rem; /* Gap between individual CRM sections */
 }
 
-/* Individual Card Styling */
+/* Individual CRM Section Item styling */
+.crm-section-item {
+    background-color: var(--card-light); /* Individual CRM section background */
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+
+body[data-theme='dark'] .crm-section-item {
+    background-color: var(--card-dark);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+
+/* Inner Grid for CRM's specific tiles (horizontal row layout) */
+.crm-section-item .crm-grid { /* This is the grid *inside* each CRM section item */
+    display: flex; /* Use flexbox for horizontal layout */
+    flex-wrap: nowrap; /* Prevent wrapping to new lines */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    padding-bottom: 10px; /* Space for scrollbar */
+    gap: 0.8rem; /* Gap between individual CRM tiles */
+    scroll-behavior: smooth; /* Smooth scrolling for horizontal */
+}
+
+/* Custom Scrollbar Styling for Webkit (Chrome, Safari) */
+.crm-section-item .crm-grid::-webkit-scrollbar {
+    height: 8px;
+}
+
+.crm-section-item .crm-grid::-webkit-scrollbar-track {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+body[data-theme='dark'] .crm-section-item .crm-grid::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.crm-section-item .crm-grid::-webkit-scrollbar-thumb {
+    background-color: var(--blue-primary);
+    border-radius: 4px;
+    border: 2px solid var(--card-light); /* Border matches card background */
+}
+
+body[data-theme='dark'] .crm-section-item .crm-grid::-webkit-scrollbar-thumb {
+    border: 2px solid var(--card-dark);
+}
+
+/* Firefox scrollbar styling */
+.crm-section-item .crm-grid {
+    scrollbar-width: thin;
+    scrollbar-color: var(--blue-primary) var(--border-color);
+}
+body[data-theme='dark'] .crm-section-item .crm-grid {
+    scrollbar-color: var(--blue-primary) rgba(255, 255, 255, 0.1);
+}
+
+
+/* Individual Card Styling (General) */
 .card {
     background-color: var(--card-light);
     border-radius: 8px;
@@ -225,6 +312,7 @@ body[data-theme='dark'] .section-title {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0; /* Prevent cards from shrinking in flex container */
 }
 
 body[data-theme='dark'] .card {
@@ -266,9 +354,8 @@ body[data-theme='dark'] .card-title {
     color: var(--text-dark);
 }
 
-
 .card-count {
-    background-color: #ef4444; /* Default red for count, will be overridden by has-pending for card */
+    background-color: #ef4444; /* Default red for global card count */
     color: white;
     padding: 4px 8px;
     border-radius: 12px;
@@ -281,30 +368,103 @@ body[data-theme='dark'] .card-title {
     text-align: center;
 }
 
-/* Highlight for Pending Cards (Red Only) */
-.card.has-pending {
+/* Highlight for Global Tiles Pending Cards (Red Only) */
+.dashboard-grid .card.has-pending { /* Apply only to cards in dashboard-grid */
   background-color: var(--red-light); /* Vibrant red */
   color: white; /* White text for contrast */
   box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4); /* Red shadow */
   animation: pulse-red 2s infinite; /* Add pulse animation */
 }
 
-/* Text color for pending cards */
-.card.has-pending .card-title,
-.card.has-pending .card-icon {
+/* Text color for global pending cards */
+.dashboard-grid .card.has-pending .card-title,
+.dashboard-grid .card.has-pending .card-icon {
   color: white;
 }
 
-/* Style for the count within a pending card */
-.card.has-pending .card-count {
+/* Style for the count within a global pending card */
+.dashboard-grid .card.has-pending .card-count {
   background-color: #c0392b; /* Darker red for the count bubble */
   color: white;
 }
 
-/* No .card.all-clear styles as per request. Cards with 0 count revert to default. */
+
+/* CRM Specific Card Overrides (Yellow/Green Theming) */
+.crm-section-item .card {
+    width: 140px; /* Fixed width for CRM cards, adjust as needed */
+    background-color: var(--crm-bg-default-light);
+    color: var(--crm-text-default-light);
+    border-color: var(--crm-bg-default-light);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+body[data-theme='dark'] .crm-section-item .card {
+    background-color: var(--crm-bg-default-dark);
+    color: var(--crm-text-default-dark);
+    border-color: var(--crm-bg-default-dark);
+}
+
+.crm-section-item .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.crm-section-item .card .card-title,
+.crm-section-item .card .card-icon {
+    color: inherit; /* Ensure text/icon color is inherited from the card's background-dependent color */
+}
+
+/* CRM Card - Pending State (Yellow/Orange) */
+.crm-section-item .card.has-pending {
+    background-color: var(--crm-bg-pending-light);
+    color: black; /* Dark text for light yellow/orange */
+    border-color: var(--crm-bg-pending-light);
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.4);
+    animation: none; /* No pulse animation for these */
+}
+body[data-theme='dark'] .crm-section-item .card.has-pending {
+    background-color: var(--crm-bg-pending-dark);
+    color: var(--text-dark); /* Keep light text for dark yellow/orange */
+    border-color: var(--crm-bg-pending-dark);
+    box-shadow: 0 4px 10px rgba(145, 108, 11, 0.4);
+}
+.crm-section-item .card.has-pending .card-title,
+.crm-section-item .card.has-pending .card-icon {
+    color: inherit; /* Ensure text/icon color is inherited */
+}
 
 
-/* Keyframe animation for the pulse effect */
+/* CRM Card - All Clear State (Green) */
+.crm-section-item .card.all-clear-crm {
+    background-color: var(--crm-bg-all-clear-light);
+    color: var(--crm-text-all-clear-light); /* White text for green */
+    border-color: var(--crm-bg-all-clear-light);
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+    animation: none; /* No pulse animation */
+}
+body[data-theme='dark'] .crm-section-item .card.all-clear-crm {
+    background-color: var(--crm-bg-all-clear-dark);
+    color: var(--crm-text-all-clear-dark);
+    border-color: var(--crm-bg-all-clear-dark);
+    box-shadow: 0 4px 10px rgba(25, 135, 84, 0.4);
+}
+.crm-section-item .card.all-clear-crm .card-title,
+.crm-section-item .card.all-clear-crm .card-icon {
+    color: inherit; /* Ensure text/icon color is inherited */
+}
+
+/* CRM Card Count Styling based on status */
+.crm-section-item .card .card-count {
+    background-color: var(--crm-count-default-bg);
+}
+.crm-section-item .card.has-pending .card-count {
+    background-color: var(--crm-count-pending-bg);
+}
+.crm-section-item .card.all-clear-crm .card-count {
+    background-color: var(--crm-count-all-clear-bg);
+}
+
+
+/* Keyframe animation for the pulse effect (ONLY for global tiles) */
 @keyframes pulse-red {
   0% {
     transform: scale(1);
@@ -346,16 +506,23 @@ body[data-theme='dark'] .card-title {
     .section-title {
         font-size: 1.2rem;
     }
-    .dashboard-grid, .crm-grid {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 0.8rem;
     }
-    .global-tiles-section .dashboard-grid {
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    .crm-grid-main {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* CRM sections can be smaller */
+        gap: 1rem;
+    }
+    .crm-section-item .crm-grid {
+        gap: 0.6rem;
     }
     .card {
         padding: 0.8rem;
         min-height: 70px;
+    }
+    .crm-section-item .card {
+        width: 120px; /* Smaller fixed width for CRM cards on smaller screens */
     }
     .card-icon {
         font-size: 1.2rem;
@@ -375,16 +542,23 @@ body[data-theme='dark'] .card-title {
     .content-area {
         padding: 1rem;
     }
-    .dashboard-grid, .crm-grid {
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 0.5rem;
     }
-    .global-tiles-section .dashboard-grid {
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    .crm-grid-main {
+        grid-template-columns: 1fr; /* Stack CRM sections vertically on very small screens */
+        gap: 1rem;
+    }
+    .crm-section-item .crm-grid {
+        gap: 0.4rem;
     }
     .card {
         padding: 0.6rem;
         min-height: 60px;
+    }
+    .crm-section-item .card {
+        width: 100px; /* Even smaller fixed width for CRM cards */
     }
     .card-title {
         font-size: 0.75rem;
