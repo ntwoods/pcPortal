@@ -8,7 +8,7 @@ const levels = [
   { text: "Delivery Confirmation", url: "https://script.google.com/macros/s/AKfycbyo5HTKVwD2L5ORxrYKRzdJYK3trFJ5FOHkmPC00TsKQQ3iLJ6aXkboKQgzZJpuf6jNqQ/exec" },
   { text: "Hold Orders", url: "https://script.google.com/macros/s/AKfycbx8Ourjem3diO9CTDl_wdGuJXSksFUImwIvq2gB1tFjeOUdNkLDdUso8he0-6CTlSJc/exec" }    
 ];
-const baseUrl = "https://ntwoods.github.io/ordertodispatch"; // Base URL for tile hrefs
+const baseUrl = "https://ntwoods.github.io/ordertodispatch";
 
 const container = document.getElementById("crm-sections");
 
@@ -29,10 +29,9 @@ crmList.forEach(crm => {
     tile.className = "tile";
     const crmParam = encodeURIComponent(crm);
     
-    // Determine the level number for the href (L1.html, L2.html, etc.)
     const levelNumber = index + 1; 
     tile.href = `${baseUrl}/L${levelNumber}.html?crm=${crmParam}&mode=view`;
-    tile.textContent = levelData.text; // Use the new descriptive text for the card
+    tile.textContent = levelData.text; // Use the new shorter descriptive text
 
     const count = document.createElement("div");
     count.className = "tile-count";
@@ -41,7 +40,6 @@ crmList.forEach(crm => {
 
     tileGrid.appendChild(tile);
 
-    // Fetch pending count from the specific API for this level and CRM
     const apiUrl = `${levelData.url}?crm=${crmParam}`;
 
     fetch(apiUrl)
@@ -53,7 +51,6 @@ crmList.forEach(crm => {
       })
       .then(data => {
         let pendingCount = 0;
-        // Logic to extract count based on different API response structures
         if (data.success && typeof data.count === 'number') {
           pendingCount = data.count;
         } else if (Array.isArray(data.data)) {
@@ -63,42 +60,30 @@ crmList.forEach(crm => {
         }
 
         if (count) {
-          count.textContent = pendingCount > 0 ? `${pendingCount}` : '✓'; // Display count or a checkmark
+          count.textContent = pendingCount > 0 ? `${pendingCount}` : '✓';
         }
 
-        // Apply classes for styling based on pending count
-        if (tile) {
-          if (pendingCount > 0) {
-            tile.classList.add('has-pending'); // Add this class when count > 0
-            tile.classList.remove('all-clear'); // Remove all-clear if present
-          } else {
-            tile.classList.remove('has-pending'); // Remove has-pending if count is 0
-            tile.classList.add('all-clear'); // Add all-clear when count is 0
-          }
-        }
-    // ...
-        
-
-        // Apply classes for styling based on pending count
         if (tile) {
           if (pendingCount > 0) {
             tile.classList.add('has-pending');
-            tile.classList.remove('all-clear');
+            // When pending, remove all-clear if it was previously set
+            tile.classList.remove('all-clear'); 
           } else {
+            // When all clear, remove has-pending
             tile.classList.remove('has-pending');
-            tile.classList.add('all-clear');
+            // DO NOT ADD 'all-clear' class or remove its styling in CSS
+            // The tile will revert to its default look defined by .tile class
           }
         }
       })
       .catch(err => {
         console.error(`Error fetching data for ${crm} - ${levelData.text}:`, err);
         if (count) {
-          count.textContent = '-'; // Indicate error
+          count.textContent = '-';
         }
-        // Remove pending/all-clear classes on error
         if (tile) {
           tile.classList.remove('has-pending');
-          tile.classList.remove('all-clear');
+          tile.classList.remove('all-clear'); // Ensure no specific styling remains on error
         }
       });
   });
@@ -106,9 +91,3 @@ crmList.forEach(crm => {
   section.appendChild(tileGrid);
   container.appendChild(section);
 });
-
-// Optional: Add the DOMContentLoaded listener and setInterval for periodic refresh
-// (as seen in Sonakshi Jain PC14691995 (1).html for full functionality,
-// but the above loop already fetches data on load for each tile.)
-// If you want a full periodic refresh of *all* counts, you'd wrap the crmList.forEach
-// in a function and call it periodically. For now, each tile fetches its own data once.
