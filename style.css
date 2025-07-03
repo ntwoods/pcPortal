@@ -1,63 +1,92 @@
 body {
   font-family: sans-serif;
-  background-color: #f8fafc;
+  background-color: #e3f2fd; /* Light blue background */
   margin: 0;
   padding: 2rem;
+  display: flex;
+  justify-content: center; /* Center the content */
+}
+
+.container {
+  max-width: 1200px; /* Max width for the container */
+  width: 100%;
+  background-color: #ffffff; /* White background for the main content area */
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Softer shadow */
 }
 
 .dashboard-title {
-  font-size: 1.8rem;
+  font-size: 2rem; /* Slightly larger title */
   font-weight: bold;
   margin-bottom: 2rem;
   text-align: center;
+  color: #1565c0; /* Darker blue for title */
 }
 
 .crm-sections {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem; /* Slightly reduced gap between CRM sections */
 }
 
 .crm-section {
-  background: #fff;
+  background: #ffffff; /* White background for each CRM section */
   padding: 1rem;
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Lighter shadow for sections */
+  border: 1px solid #bbdefb; /* Light blue border */
 }
 
 .crm-title {
-  font-size: 1.2rem;
+  font-size: 1.3rem; /* Slightly larger CRM title */
   font-weight: 600;
   margin-bottom: 1rem;
+  color: #2196f3; /* Blue for CRM title */
+  border-bottom: 2px solid #e0f2f7; /* Light blue underline */
+  padding-bottom: 0.5rem;
 }
 
 .tile-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust min-width for tiles */
   gap: 1rem;
 }
 
 .tile {
-  background-color: #e5e7eb;
+  background-color: #e1f5fe; /* Lightest blue for tiles */
   border-radius: 8px;
-  padding: 1rem;
+  padding: 1.2rem; /* Increased padding */
   text-align: center;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s; /* Add transform for hover effect */
   position: relative;
+  color: #0d47a1; /* Dark blue text for tiles */
+  text-decoration: none; /* Remove underline from links */
+  display: flex; /* Use flexbox for vertical alignment */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 80px; /* Ensure a minimum height for tiles */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Subtle shadow on tiles */
 }
 
 .tile:hover {
-  background-color: #d1d5db;
+  background-color: #bbdefb; /* Slightly darker blue on hover */
+  transform: translateY(-3px); /* Lift effect on hover */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* More pronounced shadow on hover */
 }
 
 .tile-count {
   position: absolute;
   top: 8px;
   right: 12px;
-  background: #ef4444;
+  background: #ef5350; /* Red color for count */
   color: white;
-  padding: 2px 6px;
-  border-radius: 50%;
-  font-size: 0.8rem;
+  padding: 4px 8px; /* Larger padding for count */
+  border-radius: 12px; /* More rounded corners for count */
+  font-size: 0.9rem; /* Slightly larger font size for count */
+  min-width: 25px; /* Ensure minimum width for single digit counts */
+  text-align: center;
+  font-weight: bold;
 }
