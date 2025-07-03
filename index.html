@@ -5,22 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Process Coordinator Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="dashboard-container">
-    <h1 class="dashboard-title">Dash Board</h1>
-
-    <div class="global-tiles-section">
-        <div id="global-tiles-grid" class="tile-grid">
-            </div>
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">📋 PC Portal</div>
+      <button class="theme-toggle" onclick="toggleDarkMode()">
+        🌓 Toggle Theme
+      </button>
     </div>
+  </header>
 
-    <div class="crm-summary-section">
-        <h2 class="section-title">CRM Progress</h2>
-        <div id="crm-sections" class="crm-sections">
-            </div>
+  <div class="main-wrapper">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        </nav>
+    </aside>
+
+    <div class="content-area">
+      <section class="dashboard-section section" id="overall-status-section">
+        <div class="section-header">
+          <h2 class="section-title">Overall Status</h2>
+        </div>
+        <div id="global-tiles-grid" class="dashboard-grid">
+          </div>
+      </section>
+
+      <section class="crm-section section" id="crm-progress-section">
+        <div class="section-header">
+          <h2 class="section-title">CRM Progress</h2>
+        </div>
+        <div id="crm-sections" class="crm-grid">
+          </div>
+      </section>
     </div>
-
   </div>
 
   <script src="script.js"></script>
