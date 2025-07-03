@@ -67,6 +67,19 @@ crmList.forEach(crm => {
         // Apply classes for styling based on pending count
         if (tile) {
           if (pendingCount > 0) {
+            tile.classList.add('has-pending'); // Add this class when count > 0
+            tile.classList.remove('all-clear'); // Remove all-clear if present
+          } else {
+            tile.classList.remove('has-pending'); // Remove has-pending if count is 0
+            tile.classList.add('all-clear'); // Add all-clear when count is 0
+          }
+        }
+    // ...
+        
+
+        // Apply classes for styling based on pending count
+        if (tile) {
+          if (pendingCount > 0) {
             tile.classList.add('has-pending');
             tile.classList.remove('all-clear');
           } else {
